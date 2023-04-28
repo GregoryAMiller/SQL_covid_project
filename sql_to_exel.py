@@ -33,6 +33,29 @@ sql_query = """
     Group by Location, population, date
     order by InfectedPercentage DESC
 """
+# Calculating vaccination percentage = (shots/population)*100
+sql_query = """
+    SELECT deaths.continent, deaths.Location, deaths.date, deaths.population, vaccinations.new_vaccinations
+    , (vaccinations.people_fully_vaccinated/ deaths.population)*100 as PercentFullyVaccination
+    FROM deaths
+    JOIN vaccinations
+        On deaths.Location = vaccinations.location 
+        and deaths.date = vaccinations.date
+    WHERE deaths.continent is not null
+"""
+# beds per capita
+sql_query = """
+    SELECT continent, location, date, beds_per_capita
+    FROM vaccinations
+    WHERE continent is not null
+"""
+# gdp per capita 
+sql_query = """
+    SELECT continent, location, date, gdp_per_capita
+    FROM vaccinations
+    WHERE continent is not null
+"""
+
 # Execute the SQL query and read the results into a pandas dataframe
 df = pd.read_sql_query(sql_query, conn)
 
@@ -40,7 +63,7 @@ df = pd.read_sql_query(sql_query, conn)
 df = df.fillna(0)
 
 # Export the dataframe to an Excel file
-df.to_excel('TableauTable4.xlsx', index=False)
+df.to_excel('gdp.xlsx', index=False)
 
 # # Execute the SQL query
 # cur.execute(sql_query)
